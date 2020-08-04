@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Twidder: Socialize with other people around the world</title>
+    <meta charset="utf-8">
+
+  <head>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+    <link href="styles/client.css" type="text/css" rel="stylesheet">
+    <script src="styles/client.js" type="text/javascript"></script>
+    <script src="styles/serverstub.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"> </script>
+  </head>
+
+  <body>    
+    <script type="text/view" id="welcomeview">
+      <div class="tabs"></div>
+
+      <div class="container_box">
+        <div class="generic_box logslog_box">
+          <img src="styles/wimage.png" height="390" width="330">
+        </div>
+        <div class="generic_box login_box">
+          <form class="form_field" method="get" onsubmit="return false;">
+	    <div class="txtninput_container">
+	      Email 	<input type="text" class="txtinpt input_container" name="email" id="login_email" size="8" required>
+	    </div>
+	    <div class="txtninput_container">
+	      Password 	<input type="password" class="txtinpt input_container" name="password" id="login_password" size="8" required>
+	    </div>
+
+	    <div class="login_failed" id="login_f"  style="display: none"> login failed </div>
+	    <input type="submit" value="Login" class="submitbtn" id="login_btn" onclick="clientSignIn('login_email', 'login_password')">
+
+	    <input type="submit" value="Forgot Password?" class="submitbtn" id="rpass_btn" onclick="javascript:location.href='reset_passwd.html'">
+	    
+          </form>
+        </div>
+        <div class="generic_box signup_box">
+          <h3 id="signup_txt">Signup here</h3>
+          <form action="" class="form_field" method="post" onsubmit="return false;" id="sign_up_form">
+
+	    <div class="txtninput_container">
+	      First name 	<input type="text" class="txtinpt input_container" name="fname" id="fname" size="8" >
+	    </div>
+	    <div class="txtninput_container">
+	      Family name 	<input type="text" class="txtinpt input_container" name="lname" id="lname" size="8" >
+	    </div>
+	     <div class="txtninput_container"> Gender
+	       <select class="txtinpt input_container" id="gender" >
+		 <option value="Male">Male</option>
+		 <option value="Female">Female</option>
+	       </select>
+	     </div>
+	    <div class="txtninput_container">
+	      City 	<input type="text" class="txtinpt input_container" name="city" id="city" size="8" >
+	    </div>
+	    <div class="txtninput_container">
+	      Country 	<input type="text" class="txtinpt input_container" name="country" id="country" size="8" >
+	    </div>
+	    <div class="txtninput_container">
+	      Email 	<input type="text" class="txtinpt input_container" name="email" id="email" size="8" >
+	    </div>
+	    <div class="txtninput_container">
+	      Password 	<input type="password" class="txtinpt input_container" name="password" id="password" size="8" >
+	    </div>
+	    <div class="txtninput_container">
+	      Repeat PSW	<input type="password" class="txtinpt input_container" name="rppassword" id="rppassword" size="8" >
+	    </div>
+	    <div id="signup_failed" style="display: none"> </div>
+            <input type="submit" value="Signup" class="submitbtn" id="signup_btn" onclick="clientSignUp()">
+          </form>
+        </div>
+      </div>
+    </script>
+
+    <script type="text/view" id="signedin">
+      
+      <div id="Home">
+	<body>
+	  <div class="tabs">
+	    <div class="generic_box tab" onclick="show_my_home()" style="cursor: pointer;">
+	      <b>Home</b>
+	    </div>
+	    <div class="generic_box tab" onclick="showBrowse()" style="cursor: pointer;">
+	      Browse
+	    </div>
+	    <div class="generic_box tab" onclick="showAccount()" style="cursor: pointer;">
+	      Account
+	    </div>
+	  </div>
+
+	  <div class="container_box">
+	    <div class="generic_box logslog_box">
+	      <div class="wall_header"> <h2>This is your wall!</h2> </div>
+	      <div class="wall_content" id="wall"> </div>
+       	      <input type="button" class="submitbtn" value="Reload wall" onclick="load_wall()">
+	    </div>
+
+	    <div class="generic_box login_box" id="personal_info">
+	    </div>
+	    
+	    <div class="generic_box signup_box">
+	      <h3 id="signup_txt">You are logged in</h3>
+	      
+	      <textarea id="my_text_area" rows="6" cols="31"></textarea>
+	      <input type="button"  class="submitbtn" value="Post" onclick="post_wall()">
+	      
+	    </div>
+	  </div>
+	  <div class="stats" style="position:absolute; top:200px; left:10px; width:640px; height:800px;">
+	    <canvas id="myChart" ></canvas>
+	  </div>
+	</body>
+      </div>
+      
+      <div id="Browse" style="display: none;">
+	<body>
+	  <div class="tabs">
+	    <div class="generic_box tab" onclick="show_my_home()" style="cursor: pointer;">
+	      Home
+	    </div>
+	    <div class="generic_box tab" onclick="showBrowse()" style="cursor: pointer;">
+	      <b>Browse</b>
+	    </div>
+	    <div class="generic_box tab" onclick="showAccount()" style="cursor: pointer;">
+	      Account
+	    </div>
+	  </div>
+
+	  <div class="container_box">
+	    <div class="generic_box logslog_box">
+	       <div class="wall_header"> <h2>Other users wall!</h2> </div>
+	       <div class="wall_content" id="browse_wall"> </div>
+	       <input type="button" class="submitbtn" value="Reload wall" onclick="load_wall()">
+	    </div>
+
+	    <div class="generic_box login_box" id="browse_personal_info">
+	    </div>
+	    
+	    <div class="generic_box signup_box">
+	      <h3 id="signup_txt">We are in Browse!</h3>
+	      <input type="text" class="txtinpt" name="user_email" id="user_email" size="20" placeholder="search user email">
+	      <div id="change_password_no_success" class="login_failed" style="display: none">Could not find user</div> 
+	     
+	      <input type="button" class="submitbtn" value="Search" onclick="show_other_home()">
+	      <br>
+	      <textarea id="browse_text_area" rows="6" cols="31" placeholder="write a message"></textarea>
+	      <input type="button" class="submitbtn" value="Post" onclick="post_other_wall()">
+	      	      
+	    </div>
+	  </div>
+	</body>
+      </div>
+      
+      <div id="Account" style="display: none;">
+	<body>
+	  <div class="tabs">
+	    <div class="generic_box tab" onclick="show_my_home()" style="cursor: pointer;">
+	      Home
+	    </div>
+	    <div class="generic_box tab" onclick="showBrowse()" style="cursor: pointer;">
+	      Browse
+	    </div>
+	    <div class="generic_box tab" onclick="showAccount()" style="cursor: pointer;">
+	      <b>Account</b>
+	    </div>
+	  </div>
+
+	  <div class="container_box">
+	    <div class="generic_box logslog_box">
+	      <img src="styles/wimage.png" height="390" width="330">
+	    </div>
+	    <div class="generic_box login_box"> <center><br><br>
+	      <input type="button" value="Log out" onclick="log_out()"> </center>
+	    </div>
+	    
+	    <div class="generic_box signup_box">
+	      <h3 id="signup_txt">Change password!</h3>
+	      <form action="" class="form_field" method="post" onsubmit="console.log('waddap'); change_password(); return false;">
+		<div class="txtninput_container">
+	      	  Old password <input type="password" class="txtinpt input_container" name="old_password" id="old_password" size="5" required>
+		</div>
+		<div class="txtninput_container">
+	      	  New Password <input type="password" class="txtinpt input_container" name="new_password" id="new_password" size="5" required>
+		</div>
+
+		<input type="submit" value="Change Password" class="submitbtn">
+		
+		<div id="change_password_success" style="display: none"> <br>Changed password!</div>
+		<div id="change_password_no_success2" class="login_failed" style="display: none">Did not change password</div> 
+
+	      </form>
+	    </div>
+	  </div>
+	</body>
+      </div>
+    </script>
+
+    <div id="container"></div>
+
+    
+  </body>
+  <footer>
+    <small>
+      <i>Copyright &copy; 2020 Twidder Corporation<br>
+	<a href="mailto:twidder@helpdesk.com">twidder@helpdesk.com</a>
+      </i>
+    </small>
+  </footer>
+</html>

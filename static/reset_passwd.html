@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Twidder: Socialize with other people around the world</title>
+    <meta charset="utf-8">
+
+  <head>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+    <link href="styles/client.css" type="text/css" rel="stylesheet">
+    <script src="styles/client.js" type="text/javascript"></script>
+    <script src="styles/serverstub.js" type="text/javascript"></script>
+  </head>
+
+  <body>
+      <div class="container_box">
+	<div class="generic_box rpass_box">
+	  <center><h2>Reset your password!</h2></center>
+	  <div class="rpass_txtbox">
+	    
+	    <form class="form_field" method="get" onsubmit="return false;">
+	      
+	      Email <input type="text" class="input_container" name="email" id="rpass_email" size="12" required>
+	      <br> <br>
+	      <input type="submit" value="Submit" class="submitbtn" id="rpass_btn" onclick="resetPasswd('rpass_email')">
+
+	    </form>
+
+	    <!-- <div id="ch_pwd2" style="display: none">	       -->
+	    <!--   <h4><center>A key has been emailed to you</center></h4> -->
+	    <!--   Enter key <input type="text" class=" input_container" name="email" id="enter_rendered_password" size="12"> -->
+	    <!--   <br> <br> -->
+	    <!--    <input type="submit" value="Submit" class="submitbtn" id="rpass_btn" onclick="check_key()"> -->
+	    <!--   <br> -->
+	    <!--    <div id="rpass_msg"></div> -->
+	    <!-- </div> -->
+
+	    <div id="ch_pwd" style="display: none">	      
+	      <h4><center>Change password</center></h4>
+	      key <input type="text" class=" input_container" name="email" id="enter_rendered_password" size="12">
+	      <br> <br>
+	      new passwd <input type="text" class=" input_container" name="email" id="enter_new_password" size="12">
+	      <br> <br>
+	      <input type="submit" value="Submit" class="submitbtn" id="rpass_btn" onclick="change_password2()">
+	      <br>
+	      <div id="rpass_msg"></div>
+
+	    </div>
+	    
+	  </div>
+	</div>
+      </div>
+  </body>
+  
+  <footer>
+    <small>
+      <i>Copyright &copy; 2020 Twidder Corporation<br>
+	<a href="mailto:twidder@helpdesk.com">twidder@helpdesk.com</a>
+      </i>
+    </small>
+  </footer>
+
+</html>

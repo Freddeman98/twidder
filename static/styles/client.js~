@@ -1,0 +1,291 @@
+function validateEmail(email_id) {
+    var email = document.getElementById(email_id).value;
+    var emailRegEx = /^[a-zA-Z]{1}\w+(\.\w+[@]|[@])[a-zA-Z]{2,}[.][a-zA-Z]{2,3}$/;
+
+    if ( !(emailRegEx.test(email)) ) {
+	document.getElementById("signup_failed").style = "display: block";
+	document.getElementById("signup_failed").innerHTML = "invalid email";
+	    
+        return false;
+    }
+    else {
+	document.getElementById("signup_failed").style = "display: none";
+    }
+
+    return true;
+}
+
+function clientSignUp()
+{
+    var password1 = document.getElementById('password').value;
+    var password2 = document.getElementById('rppassword').value;
+
+    if(!validatePassword(password1, password2)) {
+	return false;
+    }
+
+    if (!validateEmail('email')) {
+	return false;
+    }
+    
+    var user = {
+	'username': document.getElementById('email').value,
+	'password': document.getElementById('password').value,
+        'first_name': document.getElementById('fname').value,
+        'family_name': document.getElementById('lname').value,
+        'gender': document.getElementById('gender').value,
+        'city': document.getElementById('city').value,
+        'country': document.getElementById('country').value
+	
+    };
+
+  //  header = {"token" : "token", "data": "ldBCpwqkAhanwApyJrsJJvfDxCqCniwtfGwh"};
+    let  body = JSON.stringify(user);
+    let header = {"token": "Content-Type", "data" :"application/json;charset=UTF-8"};
+    http_request("POST", "sign_up", body, header);
+    //var ret = serverstub.signUp(user);
+
+    document.getElementById("sign_up_form").reset();
+    return true;
+}
+
+function http_request(type, route, body = null, header = null  )
+{
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+	if (this.readyState == 4 && this.status == 200) {
+	    console.log(this.responseText);
+	}
+    };
+    
+    xhttp.open(type, route, true);
+
+    if(header != null)
+    {
+	xhttp.setRequestHeader(header["token"], header["data"]);
+    }
+
+    // xhttp.setRequestHeader("token", "ldBCpwqkAhanwApyJrsJJvfDxCqCniwtfGwh")
+    console.log(body);
+    xhttp.send(body);
+}
+
+function validatePassword(password1, password2) {
+    if (password1 !== password2) { 
+        //alert('Passwords dont match');
+	document.getElementById("signup_failed").style = "display: block";
+	document.getElementById("signup_failed").innerHTML = "invalid password";
+
+        return false;
+    }
+
+    if (password1.length < 5) {
+        //alert('Password is too short');
+	document.getElementById("signup_failed").style = "display: block";
+	document.getElementById("signup_failed").innerHTML = "invalid password";
+
+        return false;
+    }
+
+    document.getElementById("signup_failed").style = "display: none";
+    
+    return true;
+}
+
+function clientSignIn(email, passw)
+{
+    var email = document.getElementById('login_email').value;
+    var password = document.getElementById('login_password').value;
+
+    var res = serverstub.signIn(email, password);
+
+    if(res.success) {
+	sessionStorage.setItem("token", res.data);
+	displayView();
+    }
+    else {
+	displayView();
+	document.getElementById("login_f").style = "display: block";
+    }
+}
+
+function show_my_home()
+{
+    var token = sessionStorage.getItem("token");
+    var res = serverstub.getUserDataByToken(token)
+    document.getElementById('Home').style = "display: block";
+    document.getElementById('Browse').style = "display: none";
+    document.getElementById('Account').style = "display: none";
+    showHome(res);
+    load_wall();
+}
+
+function showHome(res) {
+    var personal = null;
+    
+    if( document.getElementById('Home').style.display === "none")
+    {
+	personal = 'browse_personal_info';
+    }
+    else
+    {
+	personal = 'personal_info';
+    }
+
+    document.getElementById(personal).innerText = res.data.firstname + " " + res.data.familyname + "\n";
+    document.getElementById(personal).innerText += res.data.email + "\n" ;
+    document.getElementById(personal).innerText += res.data.city + ", " + res.data.country + "\n";
+    document.getElementById(personal).innerText += res.data.gender;
+}
+
+function load_wall(email = null)
+{
+    var token = sessionStorage.getItem("token");
+    var res = null;
+    var wall = null;
+    if(email === null)
+    {
+	res = serverstub.getUserMessagesByToken(token);
+	wall = document.getElementById('wall');
+    }
+    else
+    {
+	wall = document.getElementById('browse_wall');
+	res = serverstub.getUserMessagesByEmail(token,email);
+    }
+   
+    var data = res.data;
+    wall.innerText = "";
+    for(i = 0; i < data.length; i++)
+    {
+	wall.innerText += data[i].writer + " wrote: " + data[i].content + "\n";
+    }
+}
+
+function show_other_home()
+{
+    var token = sessionStorage.getItem("token");
+    var email = document.getElementById("user_email").value;
+    var res = serverstub.getUserDataByEmail(token,email);
+    
+    if(res.success === false)
+    {
+    	document.getElementById("change_password_no_success").style = "display: block";
+    }
+    else
+    {
+	document.getElementById("change_password_no_success").style = "display: none";
+    }
+    
+    showHome(res);
+    load_wall(res.data.email);
+}
+
+function post_wall()
+{
+    var token = sessionStorage.getItem("token");
+    var res = serverstub.getUserDataByToken(token)
+    var email = res.data.email;
+    var content = document.getElementById("my_text_area").value;
+    serverstub.postMessage(token, content, email);
+    load_wall();
+}
+
+function post_other_wall()
+{
+    var token = sessionStorage.getItem("token");
+    var email = document.getElementById("user_email").value;
+    var res = serverstub.getUserDataByEmail(token,email);
+    var content = document.getElementById("browse_text_area").value;
+    
+    serverstub.postMessage(token, content, email);
+    document.getElementById("browse_text_area").value = "";
+    load_wall(email);
+}
+
+function showBrowse() {
+    document.getElementById('Home').style = "display: none";
+    document.getElementById('Browse').style = "display: block";
+    document.getElementById('Account').style = "display: none";
+}
+
+function showAccount() {
+    document.getElementById('Home').style = "display: none";
+    document.getElementById('Browse').style = "display: none";
+    document.getElementById('Account').style = "display: block";
+}
+
+function change_password()
+{
+    var old_password = document.getElementById('old_password').value;
+    var password = document.getElementById('new_password').value;
+    var token = sessionStorage.getItem("token");
+
+    if (token === null || password.length < 5)
+    {
+	console.log('asdasd');
+	document.getElementById("change_password_success").style = "display: none";
+	document.getElementById("change_password_no_success2").style = "display: block";
+	return;
+    }
+
+    var msg = serverstub.changePassword(token,old_password,password);
+    console.log(msg);
+    
+    if(msg.success )
+    {
+	document.getElementById("change_password_success").style = "display: block";
+	document.getElementById("change_password_no_success2").style = "display: none";
+    }
+    else
+    {
+	console.log('asdasd');
+	document.getElementById("change_password_success").style = "display: none";
+	document.getElementById("change_password_no_success2").style = "display: block";
+    }
+}
+
+function log_out()
+{
+    var token = sessionStorage.getItem("token");
+    serverstub.signOut(token);
+  
+    sessionStorage.removeItem("token");
+    displayView();
+}
+
+function loadXMLDoc() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+	
+	if (this.readyState == 4 && this.status == 200) {
+	    document.getElementById("demo").innerHTML = this.responseText;
+	    console.log(this.responseText);
+	}
+    };
+    
+    xhttp.open("GET", "get_user_data_by_token", true);
+    xhttp.setRequestHeader("token", "ldBCpwqkAhanwApyJrsJJvfDxCqCniwtfGwh")
+
+    xhttp.send();
+}
+
+displayView = function() {
+    // the code required to display a view
+    if(sessionStorage.getItem("token") === null)
+    {
+	document.getElementById('container').innerHTML = document.getElementById('welcomeview').innerHTML;
+    }
+    else
+    {
+	document.getElementById('container').innerHTML = document.getElementById('signedin').innerHTML;
+	show_my_home();
+    }
+};
+
+window.onload = function() {
+    //code that is executed as the page is loaded.
+    //You shall put your own custom code here.
+
+    displayView();
+};
